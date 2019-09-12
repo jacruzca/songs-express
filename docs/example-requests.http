@@ -1,6 +1,6 @@
 ### Install VSCode REST Client to use this
 
-GET http://localhost:3000/v1/songs
+GET http://localhost:3000/v1/songs?skip=5&limit=3
 
 
 ###
@@ -8,6 +8,9 @@ POST http://localhost:3000/v1/songs
 content-type: application/json
 
 {
-    "name": "sample",
-    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+    "title": "Let her go",
+    "artist": "Passenger",
+    "genre": "Pop",
+    "length": 253,
+    "location": "let-her-go-passenger.mp3"
 }
