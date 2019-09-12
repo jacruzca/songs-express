@@ -1,0 +1,9 @@
+{
+  "typescript.validate.enable": false,
+  "javascript.validate.enable": false,
+  "tslint.jsEnable": false,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "eslint.enable": true
+}
