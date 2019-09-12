@@ -2,10 +2,9 @@ module.exports = {
   env: {
     es6: true,
     node: true,
+    mocha: true,
   },
-  extends: [
-    'airbnb-base',
-  ],
+  extends: ['airbnb-base'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -14,6 +13,13 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  rules: {
-  },
+  rules: {},
+  overrides: [
+    {
+      files: ['*-test.js'],
+      rules: {
+        'no-unused-expressions': 0,
+      },
+    },
+  ],
 };
