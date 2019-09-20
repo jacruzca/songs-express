@@ -1,12 +1,12 @@
 ### Install VSCode REST Client to use this
 
-GET http://localhost:3000/v1/songs?skip=0&limit=3&title=let
+GET http://localhost:3001/v1/songs?skip=0&limit=3&title=let
 
 ###
-GET http://localhost:3000/v1/songs/5d799b821cfc8b4238c9a17d/download
+GET http://localhost:3001/v1/songs/5d799b821cfc8b4238c9a17d/download
 
 ###
-POST http://localhost:3000/v1/songs
+POST http://localhost:3001/v1/songs/
 content-type: application/json
 
 {

@@ -1,105 +1,131 @@
-const mongoose = require('mongoose');
 const { expect } = require('chai');
 const sinon = require('sinon');
-require('sinon-mongoose');
-
-const { ValidationError } = mongoose.Error;
-
+const { mockRequest, mockResponse } = require('mock-req-res');
 const { buildFakeSong } = require('./songs-faker');
-const { SongModel } = require('../../lib/songs/songs-schema');
+const { SongsController } = require('../../lib/songs/songs-container');
 const {
-  DatabaseError,
-  CustomValidationError,
   NotFoundError,
+  CustomValidationError,
 } = require('../../lib/utils/errors');
-const {
-  listSongs,
-  createSong,
-  getSongById,
-} = require('../../lib/songs/songs-controller');
 
 describe('songs controller', async () => {
-  const SongModelMock = sinon.mock(SongModel);
-  describe('listSongs', async () => {
-    it('should return an empty list of songs', async () => {
-      SongModelMock.expects('find')
-        .chain('limit')
-        .chain('skip')
-        .resolves([]);
-      const songs = await listSongs({});
+  describe('getSongs', async () => {
+    it('should successfully return a list of songs. Status 200', async () => {
+      const req = mockRequest({ query: { title: 'abc' } });
+      const res = mockResponse({ json: sinon.spy() });
+      const expected = [buildFakeSong()];
+      const SongsService = {
+        listSongs: () => expected,
+      };
+      const songsController = SongsController(SongsService);
 
-      expect(songs).to.be.empty;
-    });
-    it('should return a list of songs', async () => {
-      const expectedSongs = [buildFakeSong(), buildFakeSong()];
-      SongModelMock.expects('find')
-        .chain('limit')
-        .chain('skip')
-        .resolves(expectedSongs);
-      const songs = await listSongs({});
-      expect(songs.length).to.be.equal(expectedSongs.length);
+      await songsController.getSongs(req, res);
+      expect(res.json.calledWith(expected)).to.be.true;
     });
 
-    it('should throw a database error', async () => {
-      SongModelMock.expects('find')
-        .chain('limit')
-        .chain('skip')
-        .rejects(new Error('DB error'));
+    it('should return a 500 error if something unexpected happened', async () => {
+      const req = mockRequest({ query: { title: 'abc' } });
+      const res = mockResponse({ json: sinon.spy(), status: sinon.spy() });
+      const SongsService = {
+        listSongs: () => {
+          throw new Error('unexpected found');
+        },
+      };
+      const songsController = SongsController(SongsService);
 
-      try {
-        await listSongs({});
-        expect(true).to.be.false;
-      } catch (e) {
-        expect(e).to.be.instanceOf(DatabaseError);
-      }
+      await songsController.getSongs(req, res);
+      expect(res.status.calledWith(400)).to.be.true;
+      expect(res.json.called).to.be.true;
     });
   });
 
-  describe('createSong', async () => {
-    it('should successfully create a song', async () => {
-      const expectedSong = buildFakeSong();
-      SongModelMock.expects('create').resolves(expectedSong);
-      const song = await createSong(expectedSong);
-      expect(song.title).to.be.equal(expectedSong.title);
+  describe('downloadSong', async () => {
+    it('should successfully download a song. Status 200', async () => {
+      const req = mockRequest({ params: { id: '1' } });
+      const res = mockResponse({ download: sinon.spy() });
+      const expected = buildFakeSong();
+      const SongsService = {
+        getSongById: () => expected,
+      };
+      const songsController = SongsController(SongsService);
+
+      await songsController.downloadSong(req, res);
+      expect(res.download.called).to.be.true;
     });
 
-    it('should throw a validation error', async () => {
-      SongModelMock.expects('create').rejects(new ValidationError());
-      try {
-        await createSong(buildFakeSong());
-        expect(true).to.be.false;
-      } catch (e) {
-        expect(e).to.be.instanceOf(CustomValidationError);
-      }
+    it('should return a 404 error if song was not found', async () => {
+      const req = mockRequest({ params: { id: '1' } });
+      const res = mockResponse({ download: sinon.spy(), status: sinon.spy() });
+      const SongsService = {
+        getSongById: () => {
+          throw new NotFoundError('not found');
+        },
+      };
+      const songsController = SongsController(SongsService);
+
+      await songsController.downloadSong(req, res);
+      expect(res.status.calledWith(404)).to.be.true;
+      expect(res.json.called).to.be.true;
     });
 
-    it('should throw a database error', async () => {
-      SongModelMock.expects('create').rejects(new Error());
-      try {
-        await createSong(buildFakeSong());
-        expect(true).to.be.false;
-      } catch (e) {
-        expect(e).to.be.instanceOf(DatabaseError);
-      }
+    it('should return a 500 error if something unexpected happened', async () => {
+      const req = mockRequest({ params: { id: '1' } });
+      const res = mockResponse({ download: sinon.spy(), status: sinon.spy() });
+      const SongsService = {
+        getSongById: () => {
+          throw new Error('unexpected error');
+        },
+      };
+      const songsController = SongsController(SongsService);
+
+      await songsController.downloadSong(req, res);
+      expect(res.status.calledWith(500)).to.be.true;
+      expect(res.json.called).to.be.true;
     });
   });
 
-  describe('getSongById', async () => {
-    it('should successfully return a song', async () => {
-      const expectedSong = buildFakeSong();
-      SongModelMock.expects('findOne').resolves(expectedSong);
-      const song = await getSongById(expectedSong);
-      expect(song.title).to.be.equal(expectedSong.title);
+  describe('createRandomSong', async () => {
+    it('should successfully create a song. Status 200', async () => {
+      const req = mockRequest({});
+      const res = mockResponse({ json: sinon.spy() });
+      const expected = buildFakeSong();
+      const SongsService = {
+        createRandomSong: () => expected,
+      };
+      const songsController = SongsController(SongsService);
+
+      await songsController.createRandomSong(req, res);
+      expect(res.json.called).to.be.true;
     });
 
-    it('should throw a not found error', async () => {
-      SongModelMock.expects('findOne').resolves(null);
-      try {
-        await getSongById(buildFakeSong());
-        expect(true).to.be.false;
-      } catch (e) {
-        expect(e).to.be.instanceOf(NotFoundError);
-      }
+    it('should return a 400 error if song was not found', async () => {
+      const req = mockRequest({});
+      const res = mockResponse({ json: sinon.spy(), status: sinon.spy() });
+      const SongsService = {
+        createRandomSong: () => {
+          throw new CustomValidationError('not found');
+        },
+      };
+      const songsController = SongsController(SongsService);
+
+      await songsController.createRandomSong(req, res);
+      expect(res.status.calledWith(400)).to.be.true;
+      expect(res.json.called).to.be.true;
+    });
+
+    it('should return a 500 error if something unexpected happened', async () => {
+      const req = mockRequest({});
+      const res = mockResponse({ json: sinon.spy(), status: sinon.spy() });
+      const SongsService = {
+        createRandomSong: () => {
+          throw new Error('unexpected error');
+        },
+      };
+      const songsController = SongsController(SongsService);
+
+      await songsController.createRandomSong(req, res);
+      expect(res.status.calledWith(500)).to.be.true;
+      expect(res.json.called).to.be.true;
     });
   });
 });

@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www",
+    "start": "DEBUG='songs:*' nodemon ./bin/www",
     "lint": "eslint 'lib/**/*.js'",
-    "test": "mocha test/**/*-test.js"
+    "test": "nyc --reporter=html --reporter=text node_modules/.bin/mocha test/**/*-test.js",
+    "testlogs": "DEBUG='songs:*' node_modules/.bin/mocha test/**/*-test.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -18,12 +19,15 @@
     "nodemon": "^1.19.2"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
     "eslint": "^6.3.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
+    "faker": "^4.1.0",
+    "mocha": "^6.2.0",
+    "mock-req-res": "^1.1.1",
+    "nyc": "^14.1.1",
     "sinon": "^7.4.2",
-    "sinon-mongoose": "^2.3.0",
-    "chai": "^4.2.0",
-    "faker": "^4.1.0"
+    "sinon-mongoose": "^2.3.0"
   }
 }

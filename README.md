@@ -48,11 +48,13 @@ Also, you can run any http endpoint by using VSCode [REST Client](https://market
 
 ## Running the tests
 
-Be sure to have [Mocha](https://mochajs.org/) installed globally on your system. Then run
+Run
 
     npm run test
 
 Tests run in isolation and do not depend on a external database
+
+![tests](img/tests.png "Screenshot")
 
 
 ## Available endpoints
@@ -103,6 +105,5 @@ Tests run in isolation and do not depend on a external database
 ## How to improve
 
 - Add logging
-- Separate the controller layer with the business layer
 - Add e2e tests for the API
 - Store the files in the cloud (S3 or G. Cloud Storage)

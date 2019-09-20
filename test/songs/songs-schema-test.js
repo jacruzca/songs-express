@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { expect } = require('chai');
 
-const { SongModel } = require('../../lib/songs/songs-schema');
+const { SongModel } = require('../../lib/songs/songs-container');
 
 describe('songs schema validation', () => {
   it('should be invalid if required fields are empty', (done) => {
