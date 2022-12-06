@@ -9,11 +9,11 @@
     "testlogs": "DEBUG='songs:*' node_modules/.bin/mocha test/**/*-test.js"
   },
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^8.1.0",
-    "express": "~4.16.1",
+    "express": "~4.18.2",
     "mongoose": "^5.7.0",
     "morgan": "~1.9.1",
     "nodemon": "^1.19.2"
